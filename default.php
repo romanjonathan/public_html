@@ -10,6 +10,7 @@ $page_title = "Jonathan Roman";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -52,7 +53,8 @@ $page_title = "Jonathan Roman";
         }
     </style>
 </head>
-<body>    
+<body>
+    <div class="left-half" id="sketch-container"></div>
     <div class="right-half">
         <?php echo "<h1>" . $my_name . "</h1>"; ?>
         <!-- <a style="text-decoration:none;" href="Files/Resume.html">Resume</a><br>
@@ -60,6 +62,6 @@ $page_title = "Jonathan Roman";
         <a style="text-decoration:none;" href="<?php echo $goodreads_url; ?>" target="_blank">Goodreads</a><br> -->
     </div>
 
-    <!-- <script src="sketch.js"></script> -->
+    <script src="Files/rect.js"></script>
 </body>
 </html>
