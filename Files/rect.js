@@ -112,6 +112,12 @@ function drawer(depth, coords, lastdir, lastColI, margin) {
   }
 }
 
+function mousePressed() {
+  background(0);
+  let coords = [0, 0, width, height];
+  drawer(depth, coords, 0, 0, margin);
+}
+
 // Function to get the next color index
 function getCol(lastColI) {
   let len = palette.length;
