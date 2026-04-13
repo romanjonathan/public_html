@@ -19,23 +19,29 @@ let shrinker = 1;
 function setup() {
   // Get the element where the sketch should live
   const container = document.getElementById('sketch-container');
-  
+
   // Get the container's width and height
   let containerW = container.clientWidth;
   let containerH = container.clientHeight;
 
   // Create the canvas using the container's dimensions
   let canvas = createCanvas(containerW, containerH);
-  
+
   // Attach the canvas element to the 'sketch-container' div
   canvas.parent('sketch-container');
-  
+
   noStroke();
   background(0);
 
   // ... rest of your original setup code
   let coords = [0, 0, width, height];
   drawer(depth, coords, 0, 0, margin);
+
+  canvas.elt.addEventListener('click', function() {
+    background(0);
+    let coords = [0, 0, width, height];
+    drawer(depth, coords, 0, 0, margin);
+  });
 }
 
 function drawer(depth, coords, lastdir, lastColI, margin) {
@@ -56,16 +62,16 @@ function drawer(depth, coords, lastdir, lastColI, margin) {
   // getCol returns the index, which is used to access the palette array
   let colI = getCol(lastColI);
   // fill() can take the hex string directly
-  fill(palette[colI]); 
+  fill(palette[colI]);
 
   // draw rectangle: rect(x, y, w, h, [r])
-  rect(x0, y0, wid, hei); 
+  rect(x0, y0, wid, hei);
 
   // pick next direction
   let currR = random(1);
   let vertical = false;
   // Use Math.max(1.0, ...) for ensuring a minimum value
-  let newMargin = Math.max(1.0, margin / shrinker); 
+  let newMargin = Math.max(1.0, margin / shrinker);
 
   if (currR < r) {
     vertical = true;
@@ -79,10 +85,10 @@ function drawer(depth, coords, lastdir, lastColI, margin) {
       let prob = map(x1 - x0, 3 * margin, 10 * margin, 1, 0);
       if (random(1) < prob) { return; }
     }
-    
+
     // int(random(...)) becomes floor(random(...)) or just using random and trusting array indices
-    let newsplit = floor(random(x0 + 2 * margin + 1, x1 - 2 * margin)); 
-    
+    let newsplit = floor(random(x0 + 2 * margin + 1, x1 - 2 * margin));
+
     let newCoords1 = [x0 + margin, y0 + margin, newsplit - margin / 2 - 1, y1 - margin];
     let newCoords2 = [newsplit + margin / 2, y0 + margin, x1 - margin, y1 - margin];
     drawer(depth - 1, newCoords1, 1, colI, newMargin);
@@ -96,12 +102,12 @@ function drawer(depth, coords, lastdir, lastColI, margin) {
       let prob = map(y1 - y0, 3 * margin, 10 * margin, 1, 0);
       if (random(1) < prob) { return; }
     }
-    
+
     let newsplit = floor(random(y0 + 2 * margin + 1, y1 - 2 * margin - 1));
 
     let newCoords1 = [x0 + margin, y0 + margin, x1 - margin, newsplit - margin / 2 - 1];
     let newCoords2 = [x0 + margin, newsplit + margin / 2, x1 - margin, y1 - margin];
-    
+
     if (lastdir == 1) {
       drawer(depth - 1, newCoords1, 2, colI, newMargin);
       drawer(depth - 1, newCoords2, 2, colI, newMargin);
@@ -110,12 +116,6 @@ function drawer(depth, coords, lastdir, lastColI, margin) {
       drawer(depth - 1, newCoords2, 0, colI, newMargin);
     }
   }
-}
-
-function mousePressed() {
-  background(0);
-  let coords = [0, 0, width, height];
-  drawer(depth, coords, 0, 0, margin);
 }
 
 // Function to get the next color index
