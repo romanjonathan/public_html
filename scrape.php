@@ -1,10 +1,4 @@
 <?php
-// Only allow execution from the command line (not via browser)
-if (php_sapi_name() !== 'cli') {
-    http_response_code(403);
-    exit;
-}
-
 $today    = date('Y-m-d');
 $tomorrow = date('Y-m-d', strtotime('+1 day'));
 
@@ -18,13 +12,17 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 if (!$response) {
-    mail('romanjonathan999@gmail.com', 'Scraper Error', 'Failed to fetch schedule from API.');
+    $msg = 'Failed to fetch schedule from API.';
+    echo $msg . "\n";
+    mail('romanjonathan999@gmail.com', 'Scraper Error', $msg);
     exit(1);
 }
 
 $json = json_decode($response, true);
 if (!isset($json['data'])) {
-    mail('romanjonathan999@gmail.com', 'Scraper Error', 'Unexpected API response: ' . $response);
+    $msg = 'Unexpected API response: ' . $response;
+    echo $msg . "\n";
+    mail('romanjonathan999@gmail.com', 'Scraper Error', $msg);
     exit(1);
 }
 
@@ -62,7 +60,7 @@ $body .= formatDay($tomorrow, $byDay[$tomorrow] ?? []);
 // Send email
 $to      = 'romanjonathan999@gmail.com';
 $subject = 'Ritual House — ' . date('D M j') . ' & ' . date('D M j', strtotime('+1 day'));
-$headers = 'From: romanjonathan999@gmail.com';
+$headers = 'From: noreply@jonathanroman.me';
 
 if (mail($to, $subject, $body, $headers)) {
     echo "Schedule emailed successfully.\n";
