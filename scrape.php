@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 $today    = date('Y-m-d');
 $tomorrow = date('Y-m-d', strtotime('+1 day'));
 
@@ -11,10 +17,26 @@ curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
 $response = curl_exec($ch);
 curl_close($ch);
 
+function sendMail($subject, $body) {
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = GMAIL_USER;
+    $mail->Password   = GMAIL_APP_PASSWORD;
+    $mail->SMTPSecure = 'tls';
+    $mail->Port       = 587;
+    $mail->setFrom(GMAIL_USER);
+    $mail->addAddress(MAIL_TO);
+    $mail->Subject = $subject;
+    $mail->Body    = $body;
+    $mail->send();
+}
+
 if (!$response) {
     $msg = 'Failed to fetch schedule from API.';
     echo $msg . "\n";
-    mail('romanjonathan999@gmail.com', 'Scraper Error', $msg);
+    sendMail('Scraper Error', $msg);
     exit(1);
 }
 
@@ -22,7 +44,7 @@ $json = json_decode($response, true);
 if (!isset($json['data'])) {
     $msg = 'Unexpected API response: ' . $response;
     echo $msg . "\n";
-    mail('romanjonathan999@gmail.com', 'Scraper Error', $msg);
+    sendMail('Scraper Error', $msg);
     exit(1);
 }
 
@@ -57,13 +79,11 @@ $body .= formatDay($today, $byDay[$today] ?? []);
 $body .= "\n";
 $body .= formatDay($tomorrow, $byDay[$tomorrow] ?? []);
 
-// Send email
-$to      = 'romanjonathan999@gmail.com';
 $subject = 'Ritual House — ' . date('D M j') . ' & ' . date('D M j', strtotime('+1 day'));
-$headers = 'From: noreply@jonathanroman.me';
 
-if (mail($to, $subject, $body, $headers)) {
+try {
+    sendMail($subject, $body);
     echo "Schedule emailed successfully.\n";
-} else {
-    echo "Scrape succeeded but email failed.\n";
+} catch (Exception $e) {
+    echo "Scrape succeeded but email failed: " . $e->getMessage() . "\n";
 }
