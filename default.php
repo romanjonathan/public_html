@@ -66,6 +66,19 @@ $page_title = "Jonathan Roman";
             margin: 0;
             line-height: 1;
             width: 100%;
+            position: relative;
+        }
+
+        h1:hover::after {
+            content: "Jonathan\ARoman";
+            white-space: pre;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 100%;
+            text-align: center;
+            color: #235c91;
+            pointer-events: none;
         }
 
         .divider {
@@ -85,7 +98,9 @@ $page_title = "Jonathan Roman";
     <div class="left-half" id="sketch-container"></div>
     <div class="divider"></div>
     <div class="right-half">
-        <h1>Jonathan<br>Roman</h1>
+        <a href="https://www.linkedin.com/in/jonathan-roman-a9764b203/" target="_blank" style="text-decoration:none;">
+            <h1>Jonathan<br>Roman</h1>
+        </a>
         <!-- <a style="text-decoration:none;" href="Files/Resume.html">Resume</a><br>
         <a style="text-decoration:none;" href="<?php echo $linkedin_url; ?>" target="_blank">LinkedIn</a><br>
         <a style="text-decoration:none;" href="<?php echo $goodreads_url; ?>" target="_blank">Goodreads</a><br> -->
