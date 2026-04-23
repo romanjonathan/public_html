@@ -11,6 +11,7 @@ $page_title = "Jonathan Roman";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -22,31 +23,58 @@ $page_title = "Jonathan Roman";
         
         .left-half {
             width: 50%;
-            padding-left: 0px; 
-            padding-right: 50px; 
-            /*padding-top: 30px; */
-            /*padding-bottom: 30px; */
-            display: flex; 
-            justify-content: center; /* Center the canvas inside the half */
-            align-items: center; 
+            padding: 0;
+            height: 100vh;
+            position: relative;
+        }
+
+        #sketch-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
         
         .right-half {
             width: 50%;
-            /* Add padding to prevent content from touching the edge */
-            padding-left: 0px; 
-            /*box-sizing: border-box;*/
-            text-align: left;
-            /* padding-top: 10px; /* Space from the top */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .photo-container {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .profile-photo {
+            max-height: 100%;
+            max-width: 100%;
+            width: auto;
+            height: auto;
         }
 
         h1 {
-            /* Optional: style the name */
-            font-family: Arial, sans-serif;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 10vw;
+            color: #081f48;
+            margin: 0;
+            line-height: 1;
+            width: 100%;
+        }
+
+        .divider {
+            width: 1px;
+            background-color: #081f48;
+            align-self: stretch;
         }
 
         a {
-            /* Style links */
             color: #1a0dab;
             font-family: Arial, sans-serif;
             line-height: 1.8;
@@ -55,11 +83,15 @@ $page_title = "Jonathan Roman";
 </head>
 <body>
     <div class="left-half" id="sketch-container"></div>
+    <div class="divider"></div>
     <div class="right-half">
-        <?php echo "<h1>" . $my_name . "</h1>"; ?>
+        <h1>Jonathan<br>Roman</h1>
         <!-- <a style="text-decoration:none;" href="Files/Resume.html">Resume</a><br>
         <a style="text-decoration:none;" href="<?php echo $linkedin_url; ?>" target="_blank">LinkedIn</a><br>
         <a style="text-decoration:none;" href="<?php echo $goodreads_url; ?>" target="_blank">Goodreads</a><br> -->
+        <div class="photo-container">
+            <img src="profile.jpg" alt="Profile photo" class="profile-photo">
+        </div>
     </div>
 
     <script src="Files/rect.js"></script>
