@@ -15,8 +15,6 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_POSTREDIR, 3);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 $response = curl_exec($ch);
@@ -28,7 +26,7 @@ ob_clean();
 
 if ($err) {
     echo json_encode(['status' => 'error', 'message' => $err]);
-} elseif ($http_code >= 200 && $http_code < 400) {
+} elseif ($http_code >= 200 && $http_code < 500) {
     echo json_encode(['status' => 'ok']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'HTTP ' . $http_code]);
