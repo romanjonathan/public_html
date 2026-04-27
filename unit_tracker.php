@@ -173,12 +173,12 @@ $today = date('m/d/Y');
 
 <main>
     <div id="units-container"></div>
-    <div class="summary" id="summary" style="display:none;">
-        <div class="summary-title">Session summary</div>
-        <div id="summary-rows"></div>
-    </div>
     <div class="add-row">
-        <button class="action-btn" onclick="addUnit()">+ Add unit</button>
+        <button class="action-btn" onclick="addUnit()">+ Add Unit</button>
+    </div>
+    <div class="summary" id="summary" style="display:none;">
+        <div class="summary-title">Session Summary</div>
+        <div id="summary-rows"></div>
     </div>
     <div class="export-row">
         <button class="action-btn" onclick="exportSession()">Export to Sheets</button>
