@@ -154,7 +154,7 @@ $today = date('l, F j, Y');
         .summary-row:last-child { border-bottom: none; }
         .summary-row .time { font-family: monospace; color: #888; }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             header { padding: 0.75rem 1rem; }
             header h2 { font-size: 7rem; }
             .header-date { font-size: 45px; }
