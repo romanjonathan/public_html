@@ -168,7 +168,7 @@ $today = date('m/d/Y');
 
 <header>
     <h2>Unit Tracker</h2>
-    <span class="header-date"><?php echo $today; ?></span>
+    <span class="header-date" id="header-date"></span>
 </header>
 
 <main>
@@ -187,6 +187,12 @@ $today = date('m/d/Y');
 </main>
 
 <script>
+const now = new Date();
+document.getElementById('header-date').textContent =
+    (now.getMonth()+1).toString().padStart(2,'0') + '/' +
+    now.getDate().toString().padStart(2,'0') + '/' +
+    now.getFullYear();
+
 const units = [];
 let tickInterval = null;
 
@@ -288,7 +294,7 @@ async function exportSession() {
     }
     setStatus('Exporting...');
     const payload = {
-        date: '<?php echo $today; ?>',
+        date: document.getElementById('header-date').textContent,
         units: done.map(u => ({ num: u.num, time: fmt(u.elapsed) }))
     };
     try {
