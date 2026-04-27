@@ -183,6 +183,7 @@ $today = date('m/d/Y');
     <div class="export-row">
         <button class="action-btn" onclick="exportSession()">Export to Sheets</button>
         <div id="export-status"></div>
+        <a href="https://docs.google.com/spreadsheets/d/1t4akmAF4D69uLrm4xjwJOdQEv9ydnx4utpmQb_ynhSo/edit?usp=sharing" target="_blank" style="display:inline-block; margin-top:0.5rem; font-size:13px; color:#185fa5;">View Spreadsheet</a>
     </div>
 </main>
 
