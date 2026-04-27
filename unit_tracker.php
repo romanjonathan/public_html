@@ -1,6 +1,6 @@
 <?php
 $page_title = "Unit Tracker";
-$today = date('l, F j, Y');
+$today = date('m/d/Y');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,13 +25,13 @@ $today = date('l, F j, Y');
             padding: 1rem 2rem;
             border-bottom: 1px solid #081f48;
             display: flex;
-            align-items: baseline;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         header h2 {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
+            font-size: 1.4rem;
             color: #081f48;
             font-weight: normal;
             letter-spacing: 0.05em;
@@ -40,6 +40,7 @@ $today = date('l, F j, Y');
         .header-date {
             font-size: 13px;
             color: #888;
+            margin-top: 2px;
         }
 
         .export-row {
@@ -156,7 +157,7 @@ $today = date('l, F j, Y');
 
         @media (max-width: 768px) {
             header { padding: 0.75rem 1rem; }
-            header h2 { font-size: 4.7rem; }
+            header h2 { font-size: 2rem; }
             .header-date { font-size: 30px; }
             main { padding: 1rem; }
             .unit-card { padding: 0.9rem 1rem; gap: 10px; }
@@ -256,12 +257,12 @@ function render() {
     container.innerHTML = units.map(u => {
         const elapsed = getElapsed(u);
         const badgeClass = { idle: 'badge-idle', active: 'badge-active', paused: 'badge-paused', done: 'badge-done' }[u.state];
-        const badgeText = { idle: 'not started', active: 'in progress', paused: 'paused', done: 'done' }[u.state];
+        const badgeText = { active: 'in progress', paused: 'paused', done: 'done' }[u.state] || '';
         const cardClass = u.state === 'active' ? 'active' : u.state === 'done' ? 'done' : '';
         return `<div class="unit-card ${cardClass}">
-            <span class="unit-label">Unit ${u.num}</span>
+            <span class="unit-label">${u.num}</span>
             <span class="timer-display">${fmt(elapsed)}</span>
-            <span class="status-badge ${badgeClass}">${badgeText}</span>
+            ${u.state !== 'idle' ? `<span class="status-badge ${badgeClass}">${badgeText}</span>` : ''}
             <div class="actions">
                 ${u.state === 'idle' || u.state === 'paused'
                     ? `<button class="action-btn primary" onclick="startUnit(${u.num})">Start</button>`
@@ -278,7 +279,7 @@ function render() {
     if (done.length > 0) {
         summary.style.display = 'block';
         document.getElementById('summary-rows').innerHTML = done.map(u =>
-            `<div class="summary-row"><span>Unit ${u.num}</span><span class="time">${fmt(u.elapsed)}</span></div>`
+            `<div class="summary-row"><span>${u.num}</span><span class="time">${fmt(u.elapsed)}</span></div>`
         ).join('');
     } else {
         summary.style.display = 'none';
