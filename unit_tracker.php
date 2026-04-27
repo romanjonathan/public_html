@@ -153,6 +153,22 @@ $today = date('l, F j, Y');
 
         .summary-row:last-child { border-bottom: none; }
         .summary-row .time { font-family: monospace; color: #888; }
+
+        @media (max-width: 480px) {
+            header { padding: 0.75rem 1rem; }
+            header h2 { font-size: 2.4rem; }
+            .header-date { font-size: 15px; }
+            main { padding: 1rem; }
+            .unit-card { padding: 0.9rem 1rem; gap: 10px; }
+            .unit-label { font-size: 18px; }
+            .timer-display { font-size: 22px; min-width: 80px; }
+            .status-badge { font-size: 14px; padding: 4px 12px; min-width: 72px; }
+            button.action-btn { font-size: 16px; padding: 10px 18px; border-radius: 10px; }
+            .summary { padding: 1rem; }
+            .summary-title { font-size: 15px; }
+            .summary-row { font-size: 16px; padding: 6px 0; }
+            #export-status { font-size: 15px; }
+        }
     </style>
 </head>
 <body>
