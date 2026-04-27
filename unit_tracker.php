@@ -156,18 +156,18 @@ $today = date('l, F j, Y');
 
         @media (max-width: 480px) {
             header { padding: 0.75rem 1rem; }
-            header h2 { font-size: 2.4rem; }
-            .header-date { font-size: 15px; }
+            header h2 { font-size: 7rem; }
+            .header-date { font-size: 45px; }
             main { padding: 1rem; }
             .unit-card { padding: 0.9rem 1rem; gap: 10px; }
-            .unit-label { font-size: 18px; }
-            .timer-display { font-size: 22px; min-width: 80px; }
-            .status-badge { font-size: 14px; padding: 4px 12px; min-width: 72px; }
-            button.action-btn { font-size: 16px; padding: 10px 18px; border-radius: 10px; }
+            .unit-label { font-size: 54px; }
+            .timer-display { font-size: 66px; min-width: 240px; }
+            .status-badge { font-size: 42px; padding: 12px 36px; min-width: 216px; }
+            button.action-btn { font-size: 48px; padding: 30px 54px; border-radius: 10px; }
             .summary { padding: 1rem; }
-            .summary-title { font-size: 15px; }
-            .summary-row { font-size: 16px; padding: 6px 0; }
-            #export-status { font-size: 15px; }
+            .summary-title { font-size: 45px; }
+            .summary-row { font-size: 48px; padding: 18px 0; }
+            #export-status { font-size: 45px; }
         }
     </style>
 </head>
