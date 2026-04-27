@@ -46,6 +46,7 @@ $today = date('m/d/Y');
 
         .export-row {
             margin-top: 1rem;
+            text-align: center;
         }
 
         #export-status {
@@ -135,6 +136,7 @@ $today = date('m/d/Y');
             font-size: 13px;
             color: #888;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         .summary-row {
