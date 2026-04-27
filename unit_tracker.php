@@ -26,12 +26,12 @@ $today = date('m/d/Y');
             border-bottom: 1px solid #081f48;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
         }
 
         header h2 {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem;
+            font-size: 2.5rem;
             color: #081f48;
             font-weight: normal;
             letter-spacing: 0.05em;
@@ -41,6 +41,7 @@ $today = date('m/d/Y');
             font-size: 13px;
             color: #888;
             margin-top: 2px;
+            text-align: center;
         }
 
         .export-row {
@@ -66,17 +67,19 @@ $today = date('m/d/Y');
             gap: 8px;
             margin-top: 1rem;
             align-items: center;
+            justify-content: center;
         }
 
         .unit-card {
             background: #fff;
             border: 0.5px solid #ddd;
             border-radius: 12px;
-            padding: 1rem 1.25rem;
+            padding: 0.6rem 0.5rem;
             margin-bottom: 10px;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
             align-items: center;
-            gap: 12px;
+            gap: 4px;
         }
 
         .unit-card.active { border-color: #378ADD; }
@@ -84,43 +87,33 @@ $today = date('m/d/Y');
 
         .unit-label {
             font-size: 15px;
-            font-weight: 500;
-            min-width: 60px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 0;
         }
 
         .timer-display {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 500;
             font-family: monospace;
-            min-width: 70px;
-        }
-
-        .status-badge {
-            font-size: 12px;
-            padding: 3px 10px;
-            border-radius: 8px;
-            min-width: 64px;
             text-align: center;
+            min-width: 0;
         }
 
-        .badge-idle    { background: #f1efe8; color: #888; }
-        .badge-active  { background: #e6f1fb; color: #185fa5; }
-        .badge-paused  { background: #faeeda; color: #854f0b; }
-        .badge-done    { background: #eaf3de; color: #3b6d11; }
-
-        .actions {
-            margin-left: auto;
+        .action-cell {
             display: flex;
-            gap: 8px;
+            justify-content: center;
+            min-width: 0;
         }
 
         button.action-btn {
             border: 0.5px solid #ccc;
             background: transparent;
             border-radius: 8px;
-            padding: 6px 14px;
+            padding: 6px 10px;
             font-size: 13px;
             cursor: pointer;
+            width: 100%;
         }
 
         button.action-btn:hover { background: #f5f5f5; }
@@ -157,18 +150,17 @@ $today = date('m/d/Y');
 
         @media (max-width: 768px) {
             header { padding: 0.75rem 1rem; }
-            header h2 { font-size: 2rem; }
-            .header-date { font-size: 30px; }
-            main { padding: 1rem; }
-            .unit-card { padding: 0.9rem 1rem; gap: 10px; }
-            .unit-label { font-size: 36px; }
-            .timer-display { font-size: 44px; min-width: 160px; }
-            .status-badge { font-size: 28px; padding: 8px 24px; min-width: 144px; }
-            button.action-btn { font-size: 32px; padding: 20px 36px; border-radius: 10px; }
+            header h2 { font-size: 3rem; }
+            .header-date { font-size: 16px; }
+            main { padding: 0.75rem; }
+            .unit-card { padding: 0.6rem 0.25rem; gap: 2px; }
+            .unit-label { font-size: 8vw; }
+            .timer-display { font-size: 6vw; }
+            button.action-btn { font-size: 5vw; padding: 2.5vw 1vw; border-radius: 8px; }
             .summary { padding: 1rem; }
-            .summary-title { font-size: 30px; }
-            .summary-row { font-size: 32px; padding: 12px 0; }
-            #export-status { font-size: 30px; }
+            .summary-title { font-size: 18px; }
+            .summary-row { font-size: 20px; padding: 8px 0; }
+            #export-status { font-size: 16px; }
         }
     </style>
 </head>
@@ -257,18 +249,18 @@ function render() {
     container.innerHTML = units.map(u => {
         const elapsed = getElapsed(u);
         const badgeClass = { idle: 'badge-idle', active: 'badge-active', paused: 'badge-paused', done: 'badge-done' }[u.state];
-        const badgeText = { active: 'in progress', paused: 'paused', done: 'done' }[u.state] || '';
         const cardClass = u.state === 'active' ? 'active' : u.state === 'done' ? 'done' : '';
         return `<div class="unit-card ${cardClass}">
             <span class="unit-label">${u.num}</span>
             <span class="timer-display">${fmt(elapsed)}</span>
-            ${u.state !== 'idle' ? `<span class="status-badge ${badgeClass}">${badgeText}</span>` : ''}
-            <div class="actions">
+            <div class="action-cell">
                 ${u.state === 'idle' || u.state === 'paused'
                     ? `<button class="action-btn primary" onclick="startUnit(${u.num})">Start</button>`
                     : u.state === 'active'
                     ? `<button class="action-btn" onclick="pauseUnit(${u.num})">Pause</button>`
                     : ''}
+            </div>
+            <div class="action-cell">
                 <button class="action-btn" onclick="finishUnit(${u.num})" ${u.state === 'done' ? 'disabled' : ''}>Finish</button>
             </div>
         </div>`;
