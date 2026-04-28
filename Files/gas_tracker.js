@@ -27,7 +27,7 @@ function doGet(e) {
   const result = rows.map(row => ({
     date:        Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd'),
     weight:      row[1],
-    screentime:  row[2]
+    screentime:  row[3]  // col D: decimal hours
   }));
 
   return ContentService
@@ -37,7 +37,7 @@ function doGet(e) {
 
 function doPost(e) {
   const p = JSON.parse(e.postData.contents);
-  getSheet().appendRow([new Date(p.date), parseFloat(p.weight), parseFloat(p.screentime)]);
+  getSheet().appendRow([new Date(p.date), parseFloat(p.weight), p.hhmm, parseFloat(p.screentime)]);
 
   return ContentService
     .createTextOutput(JSON.stringify({ success: true }))

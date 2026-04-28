@@ -19,12 +19,12 @@ function gas_fetch(int $n = 16): array {
     return $rows;
 }
 
-function gas_post(string $date, float $weight, float $screentime): void {
+function gas_post(string $date, float $weight, string $hhmm, float $screentime): void {
     if (!GAS_URL) return;
     $ch = curl_init(GAS_URL);
     curl_setopt_array($ch, [
         CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode(compact('date', 'weight', 'screentime')),
+        CURLOPT_POSTFIELDS     => json_encode(compact('date', 'weight', 'hhmm', 'screentime')),
         CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
@@ -51,8 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!ctype_digit($st_mins) || (int)$st_mins > 59) {
         $error = 'Minutes must be 0–59.';
     } else {
-        $screentime = (int)$st_hrs + (int)$st_mins / 60;
-        gas_post($date, round((float)$weight, 1), round($screentime, 4));
+        $hhmm       = sprintf('%d:%02d', (int)$st_hrs, (int)$st_mins);
+        $screentime = round((int)$st_hrs + (int)$st_mins / 60, 1);
+        gas_post($date, round((float)$weight, 1), $hhmm, $screentime);
         header('Location: health_tracker.php?saved=1');
         exit;
     }
