@@ -1,7 +1,7 @@
 // Google Apps Script — Health Tracker API
 //
-// Sheet structure (single sheet, 3 columns):
-//   A: Date  |  B: Weight (lbs)  |  C: Screen Time (hrs/day)
+// Sheet structure:
+//   A: Date  |  B: Weight (lbs)  |  C: Screen Time (H:mm, text)  |  D: Screen Time (decimal hrs)
 //
 // Setup:
 // 1. Go to script.google.com → New project → paste this file
@@ -25,9 +25,9 @@ function doGet(e) {
     .slice(-n);
 
   const result = rows.map(row => ({
-    date:        Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd'),
-    weight:      row[1],
-    screentime:  row[3]  // col D: decimal hours
+    date:       Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd'),
+    weight:     row[1],
+    screentime: row[3]  // col D: decimal hours
   }));
 
   return ContentService
@@ -36,8 +36,24 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  const p = JSON.parse(e.postData.contents);
-  getSheet().appendRow([new Date(p.date), parseFloat(p.weight), p.hhmm, parseFloat(p.screentime)]);
+  const p       = JSON.parse(e.postData.contents);
+  const decimal = parseFloat(p.screentime);
+  const hrs     = Math.floor(decimal);
+  const mins    = Math.round((decimal - hrs) * 60);
+  const hhmm    = hrs + ':' + String(mins).padStart(2, '0');
+
+  const sheet  = getSheet();
+  const newRow = sheet.getLastRow() + 1;
+
+  sheet.getRange(newRow, 1).setValue(new Date(p.date));
+  sheet.getRange(newRow, 2).setValue(parseFloat(p.weight));
+
+  // Force plain text so Sheets doesn't auto-convert "2:30" to a time value
+  const hhmmCell = sheet.getRange(newRow, 3);
+  hhmmCell.setNumberFormat('@');
+  hhmmCell.setValue(hhmm);
+
+  sheet.getRange(newRow, 4).setValue(decimal);
 
   return ContentService
     .createTextOutput(JSON.stringify({ success: true }))
