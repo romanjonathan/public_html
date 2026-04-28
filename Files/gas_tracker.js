@@ -27,7 +27,7 @@ function doGet(e) {
   const result = rows.map(row => ({
     date:       Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd'),
     weight:     row[1],
-    screentime: row[3]  // col D: decimal hours
+    screentime: (row[3] !== '' && row[3] != null) ? row[3] : row[2]  // col D if present, else col C (old entries)
   }));
 
   return ContentService
