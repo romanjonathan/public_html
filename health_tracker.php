@@ -14,7 +14,9 @@ function gas_fetch(int $n = 16): array {
     ]);
     $res = curl_exec($ch);
     curl_close($ch);
-    return json_decode($res, true) ?? [];
+    $rows = json_decode($res, true) ?? [];
+    usort($rows, fn($a, $b) => strcmp($a['date'], $b['date']));
+    return $rows;
 }
 
 function gas_post(string $date, float $weight, float $screentime): void {
@@ -80,8 +82,8 @@ $no_url = !GAS_URL;
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f5f5f5;
-            color: #222;
+            background: #0f0f0f;
+            color: #e8e8e8;
             min-height: 100vh;
             padding: 24px 16px 60px;
         }
@@ -90,7 +92,7 @@ $no_url = !GAS_URL;
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #111;
+            color: #fff;
         }
 
         .notice {
@@ -99,16 +101,15 @@ $no_url = !GAS_URL;
             font-size: 14px;
             margin-bottom: 16px;
         }
-        .notice.warn  { background: #fff8e1; border: 1px solid #f0c040; color: #7a5c00; }
-        .notice.ok    { background: #e8f5e9; border: 1px solid #81c784; color: #2e6b34; }
-        .notice.error { background: #fdecea; border: 1px solid #e57373; color: #7a1c1c; }
+        .notice.warn  { background: #2a2200; border: 1px solid #5a4500; color: #f0c040; }
+        .notice.ok    { background: #0a2a12; border: 1px solid #1a5c2a; color: #6fcf84; }
+        .notice.error { background: #2a0a0a; border: 1px solid #5c1a1a; color: #e57373; }
 
         /* ── Card ── */
         .card {
-            background: #fff;
+            background: #1a1a1a;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,.08);
             margin-bottom: 20px;
         }
 
@@ -117,7 +118,7 @@ $no_url = !GAS_URL;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .06em;
-            color: #888;
+            color: #666;
             margin-bottom: 16px;
         }
 
@@ -130,18 +131,18 @@ $no_url = !GAS_URL;
             display: block;
             font-size: 13px;
             font-weight: 500;
-            color: #555;
+            color: #999;
             margin-bottom: 6px;
         }
 
         .field input {
             width: 100%;
             padding: 13px 14px;
-            border: 1px solid #ddd;
+            border: 1px solid #2e2e2e;
             border-radius: 8px;
             font-size: 16px; /* prevents iOS zoom */
-            color: #222;
-            background: #fafafa;
+            color: #e8e8e8;
+            background: #242424;
             -webkit-appearance: none;
             appearance: none;
         }
@@ -149,7 +150,7 @@ $no_url = !GAS_URL;
         .field input:focus {
             outline: none;
             border-color: #4a90d9;
-            background: #fff;
+            background: #2a2a2a;
         }
 
         /* Hours + minutes side by side */
@@ -165,8 +166,8 @@ $no_url = !GAS_URL;
             display: block;
             width: 100%;
             padding: 15px;
-            background: #222;
-            color: #fff;
+            background: #e8e8e8;
+            color: #111;
             border: none;
             border-radius: 8px;
             font-size: 16px;
@@ -176,14 +177,13 @@ $no_url = !GAS_URL;
             -webkit-appearance: none;
         }
 
-        .btn:active { background: #444; }
+        .btn:active { background: #bbb; }
 
         /* ── Charts ── */
         .chart-card {
-            background: #fff;
+            background: #1a1a1a;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,.08);
             margin-bottom: 16px;
         }
 
@@ -191,12 +191,12 @@ $no_url = !GAS_URL;
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 14px;
-            color: #333;
+            color: #ccc;
         }
 
         .empty {
             text-align: center;
-            color: #aaa;
+            color: #555;
             font-size: 13px;
             padding: 28px 0;
         }
@@ -229,7 +229,7 @@ $no_url = !GAS_URL;
                        value="<?= htmlspecialchars($_POST['weight'] ?? '') ?>">
             </div>
             <div class="field">
-                <label>Screen Time (hrs &amp; mins)</label>
+                <label>Screen Time</label>
                 <div class="st-row">
                     <div class="field">
                         <label for="st_hrs">Hours</label>
@@ -270,12 +270,15 @@ $no_url = !GAS_URL;
     </div>
 
 <script>
+const tickStyle = { color: '#666', font: { size: 11 } };
+const gridStyle = { color: '#2a2a2a' };
+
 const chartDefaults = {
     responsive: true,
     plugins: { legend: { display: false } },
     scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45 } },
-        y: { beginAtZero: false, ticks: { font: { size: 11 } } }
+        x: { grid: { color: '#2a2a2a' }, ticks: { ...tickStyle, maxRotation: 45 } },
+        y: { beginAtZero: false, grid: gridStyle, ticks: tickStyle }
     },
     elements: { line: { tension: 0.3 } }
 };
@@ -290,7 +293,7 @@ function makeChart(id, labels, data, color) {
             datasets: [{
                 data,
                 borderColor: color,
-                backgroundColor: color + '18',
+                backgroundColor: color + '22',
                 pointBackgroundColor: color,
                 pointRadius: 4,
                 fill: true,
