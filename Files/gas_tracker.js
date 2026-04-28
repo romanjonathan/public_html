@@ -19,7 +19,10 @@ function getSheet() {
 function doGet(e) {
   const n    = parseInt(e.parameter.n) || 16;
   const data = getSheet().getDataRange().getValues();
-  const rows = data.slice(1).slice(-n);
+  const rows = data.slice(1)
+    .filter(row => row[0])
+    .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+    .slice(-n);
 
   const result = rows.map(row => ({
     date:        Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd'),

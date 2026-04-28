@@ -1,6 +1,5 @@
 <?php
 // ── Config ────────────────────────────────────────────────────────────────────
-// Paste your deployed Google Apps Script web app URL here:
 define('GAS_URL', 'https://script.google.com/macros/s/AKfycbzeP0j1aYkjWqSjwbfC8fQU7sLLDK6_plsdFGBw2fo4QCbAkAENqqjm1SLL3nodbRmN/exec');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -36,18 +35,22 @@ function gas_post(string $date, float $weight, float $screentime): void {
 // ── Handle form submit ────────────────────────────────────────────────────────
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $date       = trim($_POST['date'] ?? '');
-    $weight     = trim($_POST['weight'] ?? '');
-    $screentime = trim($_POST['screentime'] ?? '');
+    $date    = trim($_POST['date']    ?? '');
+    $weight  = trim($_POST['weight']  ?? '');
+    $st_hrs  = trim($_POST['st_hrs']  ?? '');
+    $st_mins = trim($_POST['st_mins'] ?? '0');
 
     if (!$date || !DateTime::createFromFormat('Y-m-d', $date)) {
         $error = 'Please enter a valid date.';
-    } elseif ($weight === '' || $screentime === '') {
-        $error = 'Both weight and screen time are required.';
-    } elseif (!is_numeric($weight) || !is_numeric($screentime)) {
-        $error = 'Weight and screen time must be numbers.';
+    } elseif ($weight === '' || !is_numeric($weight) || (float)$weight <= 0) {
+        $error = 'Please enter a valid weight.';
+    } elseif ($st_hrs === '' || !ctype_digit($st_hrs)) {
+        $error = 'Please enter screen time hours.';
+    } elseif (!ctype_digit($st_mins) || (int)$st_mins > 59) {
+        $error = 'Minutes must be 0–59.';
     } else {
-        gas_post($date, (float)$weight, (float)$screentime);
+        $screentime = (int)$st_hrs + (int)$st_mins / 60;
+        gas_post($date, round((float)$weight, 1), round($screentime, 4));
         header('Location: health_tracker.php?saved=1');
         exit;
     }
@@ -61,9 +64,9 @@ $wValues  = json_encode(array_column($rows, 'weight'));
 $stLabels = json_encode(array_column($rows, 'date'));
 $stValues = json_encode(array_column($rows, 'screentime'));
 
-$today   = date('Y-m-d');
-$saved   = isset($_GET['saved']);
-$no_url  = !GAS_URL;
+$today  = date('Y-m-d');
+$saved  = isset($_GET['saved']);
+$no_url = !GAS_URL;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,77 +83,67 @@ $no_url  = !GAS_URL;
             background: #f5f5f5;
             color: #222;
             min-height: 100vh;
-            padding: 40px 16px 60px;
-        }
-
-        .container {
-            max-width: 680px;
-            margin: 0 auto;
+            padding: 24px 16px 60px;
         }
 
         h1 {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             color: #111;
         }
 
         .notice {
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 20px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
         }
         .notice.warn  { background: #fff8e1; border: 1px solid #f0c040; color: #7a5c00; }
         .notice.ok    { background: #e8f5e9; border: 1px solid #81c784; color: #2e6b34; }
         .notice.error { background: #fdecea; border: 1px solid #e57373; color: #7a1c1c; }
 
-        /* ── Form ── */
+        /* ── Card ── */
         .card {
             background: #fff;
-            border-radius: 10px;
-            padding: 24px;
+            border-radius: 12px;
+            padding: 20px;
             box-shadow: 0 1px 4px rgba(0,0,0,.08);
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
 
         .card h2 {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: .05em;
-            color: #666;
-            margin-bottom: 18px;
-        }
-
-        .fields {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
+            letter-spacing: .06em;
+            color: #888;
             margin-bottom: 16px;
         }
 
-        @media (max-width: 500px) {
-            .fields { grid-template-columns: 1fr; }
+        /* ── Fields ── */
+        .field {
+            margin-bottom: 14px;
         }
 
         .field label {
             display: block;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
             color: #555;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .field input {
             width: 100%;
-            padding: 9px 11px;
+            padding: 13px 14px;
             border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 8px;
+            font-size: 16px; /* prevents iOS zoom */
             color: #222;
             background: #fafafa;
-            transition: border-color .15s;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .field input:focus {
@@ -159,52 +152,61 @@ $no_url  = !GAS_URL;
             background: #fff;
         }
 
+        /* Hours + minutes side by side */
+        .st-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .st-row .field { margin-bottom: 0; }
+
         .btn {
-            padding: 9px 20px;
+            display: block;
+            width: 100%;
+            padding: 15px;
             background: #222;
             color: #fff;
             border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background .15s;
+            margin-top: 18px;
+            -webkit-appearance: none;
         }
 
-        .btn:hover { background: #444; }
+        .btn:active { background: #444; }
 
         /* ── Charts ── */
         .chart-card {
             background: #fff;
-            border-radius: 10px;
-            padding: 24px;
+            border-radius: 12px;
+            padding: 20px;
             box-shadow: 0 1px 4px rgba(0,0,0,.08);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .chart-card h2 {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             color: #333;
         }
-
-        .chart-card canvas { display: block; }
 
         .empty {
             text-align: center;
             color: #aaa;
             font-size: 13px;
-            padding: 32px 0;
+            padding: 28px 0;
         }
     </style>
 </head>
 <body>
-<div class="container">
     <h1>Health Tracker</h1>
 
     <?php if ($no_url): ?>
-    <div class="notice warn">GAS_URL is not configured — open <code>health_tracker.php</code> and paste your Google Apps Script deployment URL.</div>
+    <div class="notice warn">GAS_URL not configured.</div>
     <?php elseif ($saved): ?>
     <div class="notice ok">Logged successfully.</div>
     <?php elseif ($error): ?>
@@ -214,23 +216,35 @@ $no_url  = !GAS_URL;
     <div class="card">
         <h2>Log This Week</h2>
         <form method="POST">
-            <div class="fields">
-                <div class="field">
-                    <label for="date">Date</label>
-                    <input type="date" id="date" name="date"
-                           value="<?= htmlspecialchars($_POST['date'] ?? $today) ?>" required>
-                </div>
-                <div class="field">
-                    <label for="weight">Weight (lbs)</label>
-                    <input type="number" id="weight" name="weight" step="0.1" min="0"
-                           placeholder="175.0"
-                           value="<?= htmlspecialchars($_POST['weight'] ?? '') ?>">
-                </div>
-                <div class="field">
-                    <label for="screentime">Screen Time (hrs/day)</label>
-                    <input type="number" id="screentime" name="screentime" step="0.1" min="0"
-                           placeholder="4.5"
-                           value="<?= htmlspecialchars($_POST['screentime'] ?? '') ?>">
+            <div class="field">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date"
+                       value="<?= htmlspecialchars($_POST['date'] ?? $today) ?>" required>
+            </div>
+            <div class="field">
+                <label for="weight">Weight (lbs)</label>
+                <input type="number" id="weight" name="weight"
+                       inputmode="decimal" step="0.1" min="0"
+                       placeholder="175.0"
+                       value="<?= htmlspecialchars($_POST['weight'] ?? '') ?>">
+            </div>
+            <div class="field">
+                <label>Screen Time (hrs &amp; mins)</label>
+                <div class="st-row">
+                    <div class="field">
+                        <label for="st_hrs">Hours</label>
+                        <input type="number" id="st_hrs" name="st_hrs"
+                               inputmode="numeric" min="0" step="1"
+                               placeholder="2"
+                               value="<?= htmlspecialchars($_POST['st_hrs'] ?? '') ?>">
+                    </div>
+                    <div class="field">
+                        <label for="st_mins">Minutes</label>
+                        <input type="number" id="st_mins" name="st_mins"
+                               inputmode="numeric" min="0" max="59" step="1"
+                               placeholder="30"
+                               value="<?= htmlspecialchars($_POST['st_mins'] ?? '') ?>">
+                    </div>
                 </div>
             </div>
             <button type="submit" class="btn">Log</button>
@@ -242,7 +256,7 @@ $no_url  = !GAS_URL;
         <?php if (empty($rows)): ?>
             <p class="empty">No data yet.</p>
         <?php else: ?>
-            <canvas id="weightChart" height="90"></canvas>
+            <canvas id="weightChart"></canvas>
         <?php endif; ?>
     </div>
 
@@ -251,17 +265,16 @@ $no_url  = !GAS_URL;
         <?php if (empty($rows)): ?>
             <p class="empty">No data yet.</p>
         <?php else: ?>
-            <canvas id="screentimeChart" height="90"></canvas>
+            <canvas id="screentimeChart"></canvas>
         <?php endif; ?>
     </div>
-</div>
 
 <script>
 const chartDefaults = {
     responsive: true,
     plugins: { legend: { display: false } },
     scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45 } },
         y: { beginAtZero: false, ticks: { font: { size: 11 } } }
     },
     elements: { line: { tension: 0.3 } }
