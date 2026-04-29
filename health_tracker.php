@@ -105,39 +105,72 @@ $no_url = !GAS_URL;
         .notice.ok    { background: #0a2a12; border: 1px solid #1a5c2a; color: #6fcf84; }
         .notice.error { background: #2a0a0a; border: 1px solid #5c1a1a; color: #e57373; }
 
-        /* ── Card ── */
-        .card {
+        /* ── Chart ── */
+        .chart-card {
             background: #1a1a1a;
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .toggle-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background: transparent;
+            color: #555;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+            -webkit-appearance: none;
+        }
+
+        .empty {
+            text-align: center;
+            color: #555;
+            font-size: 13px;
+            padding: 28px 0;
+        }
+
+        /* ── Log form ── */
+        .card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 16px;
             margin-bottom: 20px;
         }
 
         .card h2 {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .06em;
             color: #666;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
-        /* ── Fields ── */
         .field {
-            margin-bottom: 14px;
+            margin-bottom: 10px;
         }
 
         .field label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             color: #999;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .field input {
             width: 100%;
-            padding: 13px 14px;
+            padding: 10px 12px;
             border: 1px solid #2e2e2e;
             border-radius: 8px;
             font-size: 16px; /* prevents iOS zoom */
@@ -153,7 +186,6 @@ $no_url = !GAS_URL;
             background: #2a2a2a;
         }
 
-        /* Hours + minutes side by side */
         .st-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -165,41 +197,19 @@ $no_url = !GAS_URL;
         .btn {
             display: block;
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: #e8e8e8;
             color: #111;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 18px;
+            margin-top: 14px;
             -webkit-appearance: none;
         }
 
         .btn:active { background: #bbb; }
-
-        /* ── Charts ── */
-        .chart-card {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .chart-card h2 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: #ccc;
-        }
-
-        .empty {
-            text-align: center;
-            color: #555;
-            font-size: 13px;
-            padding: 28px 0;
-        }
     </style>
 </head>
 <body>
@@ -213,8 +223,20 @@ $no_url = !GAS_URL;
     <div class="notice error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
+    <div class="chart-card">
+        <?php if (empty($rows)): ?>
+            <p class="empty">No data yet.</p>
+        <?php else: ?>
+            <div class="chart-controls">
+                <button class="toggle-btn" id="btn-weight"     onclick="setActive(0)">Weight</button>
+                <button class="toggle-btn" id="btn-screentime" onclick="setActive(1)">Screen Time</button>
+            </div>
+            <canvas id="mainChart"></canvas>
+        <?php endif; ?>
+    </div>
+
     <div class="card">
-        <h2>Log This Week</h2>
+        <h2>Log Entry</h2>
         <form method="POST">
             <div class="field">
                 <label for="date">Date</label>
@@ -251,37 +273,10 @@ $no_url = !GAS_URL;
         </form>
     </div>
 
-    <div class="chart-card">
-        <h2>Weight (lbs)</h2>
-        <?php if (empty($rows)): ?>
-            <p class="empty">No data yet.</p>
-        <?php else: ?>
-            <canvas id="weightChart"></canvas>
-        <?php endif; ?>
-    </div>
-
-    <div class="chart-card">
-        <h2>Screen Time (hrs/day)</h2>
-        <?php if (empty($rows)): ?>
-            <p class="empty">No data yet.</p>
-        <?php else: ?>
-            <canvas id="screentimeChart"></canvas>
-        <?php endif; ?>
-    </div>
-
+<?php if (!empty($rows)): ?>
 <script>
-const tickStyle = { color: '#666', font: { size: 11 } };
-const gridStyle = { color: '#2a2a2a' };
-
-const chartDefaults = {
-    responsive: true,
-    plugins: { legend: { display: false } },
-    scales: {
-        x: { grid: { color: '#2a2a2a' }, ticks: { ...tickStyle, maxRotation: 45 } },
-        y: { beginAtZero: false, grid: gridStyle, ticks: tickStyle }
-    },
-    elements: { line: { tension: 0.3 } }
-};
+const COLORS = ['#4a90d9', '#e07b4a'];
+const BTNS   = ['btn-weight', 'btn-screentime'];
 
 function decimalToHHMM(v) {
     const h = Math.floor(v);
@@ -289,50 +284,89 @@ function decimalToHHMM(v) {
     return h + ':' + String(m).padStart(2, '0');
 }
 
-const screentimeOptions = {
-    ...chartDefaults,
-    plugins: {
-        legend: { display: false },
-        tooltip: {
-            callbacks: {
-                label: ctx => decimalToHHMM(ctx.parsed.y)
-            }
-        }
-    },
-    scales: {
-        ...chartDefaults.scales,
-        y: {
-            ...chartDefaults.scales.y,
-            ticks: {
-                ...tickStyle,
-                callback: v => decimalToHHMM(v)
-            }
-        }
-    }
-};
-
-function makeChart(id, labels, data, color, options = chartDefaults) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    new Chart(el, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                data,
-                borderColor: color,
-                backgroundColor: color + '22',
-                pointBackgroundColor: color,
+const chart = new Chart(document.getElementById('mainChart'), {
+    type: 'line',
+    data: {
+        labels: <?= $wLabels ?>,
+        datasets: [
+            {
+                data: <?= $wValues ?>,
+                borderColor: COLORS[0],
+                backgroundColor: COLORS[0] + '22',
+                pointBackgroundColor: COLORS[0],
                 pointRadius: 4,
                 fill: true,
-            }]
+                tension: 0.3,
+            },
+            {
+                data: <?= $stValues ?>,
+                borderColor: COLORS[1],
+                backgroundColor: COLORS[1] + '22',
+                pointBackgroundColor: COLORS[1],
+                pointRadius: 4,
+                fill: true,
+                tension: 0.3,
+                hidden: true,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ctx.datasetIndex === 1
+                        ? decimalToHHMM(ctx.parsed.y)
+                        : ctx.parsed.y
+                }
+            }
         },
-        options
+        scales: {
+            x: {
+                grid: { color: '#2a2a2a' },
+                ticks: { color: '#666', font: { size: 11 }, maxRotation: 45 }
+            },
+            y: {
+                beginAtZero: false,
+                grid: { color: '#2a2a2a' },
+                ticks: { color: '#666', font: { size: 11 } },
+                title: {
+                    display: true,
+                    text: 'lbs',
+                    color: '#555',
+                    font: { size: 11 }
+                }
+            }
+        },
+        elements: { line: { tension: 0.3 } }
+    }
+});
+
+function setActive(idx) {
+    chart.data.datasets.forEach((ds, i) => { ds.hidden = (i !== idx); });
+
+    const yScale = chart.options.scales.y;
+    if (idx === 1) {
+        yScale.ticks.callback = v => decimalToHHMM(v);
+        yScale.title.text = 'hrs';
+    } else {
+        yScale.ticks.callback = undefined;
+        yScale.title.text = 'lbs';
+    }
+    chart.update();
+
+    BTNS.forEach((id, i) => {
+        const btn = document.getElementById(id);
+        const active = i === idx;
+        btn.style.color       = active ? COLORS[i] : '#555';
+        btn.style.borderColor = active ? COLORS[i] : '#333';
+        btn.style.background  = active ? COLORS[i] + '18' : 'transparent';
     });
 }
 
-makeChart('weightChart',     <?= $wLabels ?>,  <?= $wValues ?>,  '#4a90d9');
-makeChart('screentimeChart', <?= $stLabels ?>, <?= $stValues ?>, '#e07b4a', screentimeOptions);
+setActive(0);
 </script>
+<?php endif; ?>
 </body>
 </html>
