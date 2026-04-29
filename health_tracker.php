@@ -283,7 +283,35 @@ const chartDefaults = {
     elements: { line: { tension: 0.3 } }
 };
 
-function makeChart(id, labels, data, color) {
+function decimalToHHMM(v) {
+    const h = Math.floor(v);
+    const m = Math.round((v - h) * 60);
+    return h + ':' + String(m).padStart(2, '0');
+}
+
+const screentimeOptions = {
+    ...chartDefaults,
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            callbacks: {
+                label: ctx => decimalToHHMM(ctx.parsed.y)
+            }
+        }
+    },
+    scales: {
+        ...chartDefaults.scales,
+        y: {
+            ...chartDefaults.scales.y,
+            ticks: {
+                ...tickStyle,
+                callback: v => decimalToHHMM(v)
+            }
+        }
+    }
+};
+
+function makeChart(id, labels, data, color, options = chartDefaults) {
     const el = document.getElementById(id);
     if (!el) return;
     new Chart(el, {
@@ -299,12 +327,12 @@ function makeChart(id, labels, data, color) {
                 fill: true,
             }]
         },
-        options: chartDefaults
+        options
     });
 }
 
 makeChart('weightChart',     <?= $wLabels ?>,  <?= $wValues ?>,  '#4a90d9');
-makeChart('screentimeChart', <?= $stLabels ?>, <?= $stValues ?>, '#e07b4a');
+makeChart('screentimeChart', <?= $stLabels ?>, <?= $stValues ?>, '#e07b4a', screentimeOptions);
 </script>
 </body>
 </html>
