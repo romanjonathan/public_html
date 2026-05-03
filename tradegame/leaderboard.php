@@ -1,0 +1,60 @@
+<?php
+$scores = [];
+$db_path = __DIR__ . '/db.sqlite';
+
+if (file_exists($db_path)) {
+    try {
+        $db = new PDO('sqlite:' . $db_path);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $db->query('
+            SELECT player_name, score, total_rounds, played_at
+            FROM scores
+            ORDER BY score DESC, played_at ASC
+            LIMIT 20
+        ');
+        $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Table may not exist yet
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Leaderboard</h1>
+
+    <?php if (empty($scores)): ?>
+        <p class="subtitle">No scores yet. Be the first!</p>
+    <?php else: ?>
+        <table class="leaderboard">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Final Bankroll</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($scores as $i => $row): ?>
+                <tr class="<?= $i === 0 ? 'top' : '' ?>">
+                    <td><?= $i + 1 ?></td>
+                    <td><?= htmlspecialchars($row['player_name']) ?></td>
+                    <td>$<?= number_format($row['score']) ?></td>
+                    <td><?= $row['played_at'] ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <a class="link" href="index.php">← Play</a>
+</div>
+</body>
+</html>

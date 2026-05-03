@@ -1,0 +1,328 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: #0a0a12;
+    color: #d4d4e0;
+    font-family: 'SF Mono', 'Fira Code', monospace, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.container.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    color: #e4e4f0;
+}
+
+h2 {
+    font-size: 1.4rem;
+    color: #e4e4f0;
+}
+
+.subtitle {
+    color: #707090;
+    font-size: 0.95rem;
+}
+
+/* HUD bar */
+.hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    background: #12121e;
+    border: 1px solid #2a2a3e;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #8080a0;
+    margin-bottom: 1rem;
+}
+
+/* Chart */
+#chart {
+    width: 100%;
+    border: 1px solid #1e1e2e;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+/* Guess buttons */
+.guess-form {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+button, .btn-up, .btn-down, .btn-next {
+    display: inline-block;
+    padding: 0.75rem 2.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+button:hover, .btn-up:hover, .btn-down:hover, .btn-next:hover {
+    opacity: 0.85;
+}
+
+.btn-up, button[value="up"] {
+    background: #26a69a;
+    color: #fff;
+}
+
+.btn-down, button[value="down"] {
+    background: #ef5350;
+    color: #fff;
+}
+
+.btn-next {
+    background: #3a3a5e;
+    color: #d4d4f0;
+    padding: 0.75rem 2rem;
+}
+
+/* Index form */
+form input[type="text"] {
+    background: #12121e;
+    border: 1px solid #2a2a3e;
+    border-radius: 6px;
+    color: #e4e4f0;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.65rem 1rem;
+    width: 260px;
+    outline: none;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+form input[type="text"]::placeholder { color: #505068; }
+
+form input[type="text"]:focus {
+    border-color: #4a4a7e;
+}
+
+form button[type="submit"] {
+    background: #4a4a9e;
+    color: #fff;
+    width: 260px;
+    padding: 0.75rem;
+    font-size: 1rem;
+}
+
+/* Hint text */
+.hint {
+    color: #505068;
+    font-size: 0.82rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Option info bar */
+.option-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.6rem 1rem;
+    background: #12121e;
+    border: 1px solid #2a2a3e;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.option-info strong { color: #e4e4f0; }
+.muted { color: #505068; margin-left: auto; font-size: 0.78rem; }
+
+/* Bet row */
+.bet-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.bet-row label {
+    color: #606080;
+    font-size: 0.85rem;
+}
+
+.bet-prefix {
+    color: #a0a0c0;
+    font-size: 1rem;
+    margin-right: -0.3rem;
+}
+
+#bet-input {
+    background: #12121e;
+    border: 1px solid #2a2a3e;
+    border-radius: 5px;
+    color: #e4e4f0;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.45rem 0.65rem;
+    width: 110px;
+    outline: none;
+}
+
+#bet-input:focus { border-color: #4a4a7e; }
+
+.bet-quick {
+    background: #1e1e30;
+    border: 1px solid #2a2a3e;
+    border-radius: 5px;
+    color: #8080a0;
+    font-family: inherit;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.bet-quick:hover { background: #2a2a44; color: #c0c0e0; }
+
+.bet-error {
+    color: #ef5350;
+    font-size: 0.8rem;
+    margin-top: -0.25rem;
+}
+
+.bust { color: #ef5350; font-weight: 700; }
+
+/* Inline result bar */
+#result-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.85rem 1.25rem;
+    background: #12121e;
+    border: 1px solid #2a2a3e;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+}
+
+.result-verdict {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.result-verdict.correct { color: #26a69a; }
+.result-verdict.wrong   { color: #ef5350; }
+
+.result-move  { color: #a0a0c0; }
+.result-score { color: #606080; margin-left: auto; }
+
+.btn-sm {
+    display: inline-block;
+    padding: 0.45rem 1.1rem;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: #3a3a5e;
+    color: #d4d4f0;
+    transition: opacity 0.15s;
+}
+.btn-sm:hover   { opacity: 0.8; }
+.btn-sm.btn-next { background: #26a69a; color: #fff; }
+
+.hidden { display: none !important; }
+
+/* Result card */
+.result-card {
+    padding: 2rem 3rem;
+    border-radius: 8px;
+    border: 1px solid;
+    text-align: center;
+    min-width: 320px;
+}
+
+.result-card.correct {
+    background: #0d2b29;
+    border-color: #26a69a;
+}
+
+.result-card.wrong {
+    background: #2b0d0d;
+    border-color: #ef5350;
+}
+
+.result-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.result-detail {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: #a0a0c0;
+}
+
+.green { color: #26a69a; }
+.red   { color: #ef5350; }
+
+.final-score {
+    font-size: 1.6rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Leaderboard */
+.leaderboard {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+.leaderboard th {
+    text-align: left;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #2a2a3e;
+    color: #606080;
+    font-weight: 500;
+}
+
+.leaderboard td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #1a1a2e;
+}
+
+.leaderboard tr.top td {
+    color: #ffd700;
+}
+
+.link {
+    color: #5050a0;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.link:hover { color: #8080d0; }
