@@ -1,6 +1,13 @@
 <?php
 session_start();
 session_unset();
+
+$lock = __DIR__ . '/.last_stock_run';
+if (!file_exists($lock) || (time() - filemtime($lock)) > 3600) {
+    touch($lock);
+    $script = escapeshellarg(__DIR__ . '/get_stock.py');
+    exec('nohup /usr/bin/python3 ' . $script . ' > /dev/null 2>&1 &');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
