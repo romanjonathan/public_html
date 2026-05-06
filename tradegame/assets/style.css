@@ -326,3 +326,81 @@ form button[type="submit"] {
 }
 
 .link:hover { color: #8080d0; }
+
+/* Stock picker select */
+form select {
+    background: #12121e;
+    border: 1px solid #2a2a3e;
+    border-radius: 6px;
+    color: #e4e4f0;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.65rem 1rem;
+    width: 260px;
+    outline: none;
+    display: block;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    appearance: none;
+}
+
+form select:focus { border-color: #4a4a7e; }
+
+/* Open positions panel */
+.positions-panel-wrap { margin-top: 1.5rem; }
+
+.positions-title {
+    font-size: 0.8rem;
+    color: #505068;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.positions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.positions-table th {
+    text-align: left;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid #2a2a3e;
+    color: #505068;
+    font-weight: 500;
+}
+
+.positions-table td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #1a1a2e;
+}
+
+.sell-btn {
+    background: #2a1a1a;
+    border: 1px solid #5a2a2a;
+    border-radius: 4px;
+    color: #ef5350;
+    font-family: inherit;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sell-btn:hover { background: #3a2020; }
+
+/* End of day */
+.end-day {
+    padding: 1.5rem 0;
+    text-align: center;
+}
+
+.end-bankroll {
+    font-size: 1.1rem;
+    margin-top: 0.75rem;
+    color: #a0a0c0;
+}
+
+.end-bankroll strong { color: #e4e4f0; }

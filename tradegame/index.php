@@ -13,16 +13,25 @@ if (!file_exists($lock) || (time() - filemtime($lock)) > 3600) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stock Game</title>
+    <title>Trade Game</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <div class="container center">
-    <h1>Stock Game</h1>
-    <p class="subtitle">5 rounds. Predict whether the next candle closes <strong>Up</strong> or <strong>Down</strong>.</p>
+    <h1>Trade Game</h1>
+    <p class="subtitle">Trade 0DTE options through a full market day. Open positions at close expire worthless.</p>
     <form action="game.php" method="post">
-        <input type="text" name="player_name" placeholder="Enter your name" maxlength="32" required autofocus>
-        <button type="submit">Start Game</button>
+        <input type="text" name="player_name" placeholder="Your name" maxlength="32" required autofocus>
+        <select name="ticker">
+            <option value="AAPL">AAPL — Apple</option>
+            <option value="MSFT">MSFT — Microsoft</option>
+            <option value="GOOGL">GOOGL — Alphabet</option>
+            <option value="AMZN">AMZN — Amazon</option>
+            <option value="NVDA">NVDA — Nvidia</option>
+            <option value="META">META — Meta</option>
+            <option value="TSLA">TSLA — Tesla</option>
+        </select>
+        <button type="submit">Start Trading</button>
     </form>
     <a class="link" href="leaderboard.php">Leaderboard</a>
 </div>

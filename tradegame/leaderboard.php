@@ -1,5 +1,5 @@
 <?php
-$scores = [];
+$scores  = [];
 $db_path = __DIR__ . '/db.sqlite';
 
 if (file_exists($db_path)) {
@@ -7,15 +7,13 @@ if (file_exists($db_path)) {
         $db = new PDO('sqlite:' . $db_path);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $stmt = $db->query('
-            SELECT player_name, score, total_rounds, played_at
+            SELECT player_name, score, ticker, played_at
             FROM scores
             ORDER BY score DESC, played_at ASC
             LIMIT 20
         ');
         $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        // Table may not exist yet
-    }
+    } catch (PDOException $e) {}
 }
 ?>
 <!DOCTYPE html>
@@ -37,6 +35,7 @@ if (file_exists($db_path)) {
                 <tr>
                     <th>#</th>
                     <th>Player</th>
+                    <th>Ticker</th>
                     <th>Final Bankroll</th>
                     <th>Date</th>
                 </tr>
@@ -46,7 +45,8 @@ if (file_exists($db_path)) {
                 <tr class="<?= $i === 0 ? 'top' : '' ?>">
                     <td><?= $i + 1 ?></td>
                     <td><?= htmlspecialchars($row['player_name']) ?></td>
-                    <td>$<?= number_format($row['score']) ?></td>
+                    <td><?= htmlspecialchars($row['ticker'] ?? '—') ?></td>
+                    <td>$<?= number_format($row['score'], 2) ?></td>
                     <td><?= $row['played_at'] ?></td>
                 </tr>
                 <?php endforeach; ?>
