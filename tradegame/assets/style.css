@@ -318,6 +318,11 @@ form button[type="submit"] {
     color: #ffd700;
 }
 
+.leaderboard tr.you td {
+    color: #e4e4f0;
+    background: #1a1a35;
+}
+
 .link {
     color: #5050a0;
     text-decoration: none;

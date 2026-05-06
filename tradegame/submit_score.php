@@ -27,7 +27,7 @@ try {
 
     $stmt = $db->prepare('INSERT INTO scores (player_name, score, total_rounds, ticker, played_at) VALUES (?, ?, 0, ?, ?)');
     $stmt->execute([$_SESSION['player_name'], $bankroll, $ticker, date('Y-m-d H:i:s')]);
-    echo json_encode(['ok' => true]);
+    echo json_encode(['ok' => true, 'id' => (int)$db->lastInsertId()]);
 } catch (PDOException $e) {
     echo json_encode(['error' => 'db']);
 }

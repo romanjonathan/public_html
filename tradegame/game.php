@@ -369,6 +369,12 @@ function endOfDay() {
         method:  'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body:    `bankroll=${encodeURIComponent(bankroll.toFixed(2))}&ticker=${encodeURIComponent(TICKER)}`,
+    }).then(r => r.json()).then(data => {
+        if (data.id) {
+            document.querySelectorAll('a[href="leaderboard.php"]').forEach(a => {
+                a.href = 'leaderboard.php?score_id=' + data.id;
+            });
+        }
     }).catch(() => {});
 }
 

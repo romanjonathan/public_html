@@ -1,13 +1,14 @@
 <?php
-$scores  = [];
-$db_path = __DIR__ . '/db.sqlite';
+$scores   = [];
+$score_id = (int)($_GET['score_id'] ?? 0);
+$db_path  = __DIR__ . '/db.sqlite';
 
 if (file_exists($db_path)) {
     try {
         $db = new PDO('sqlite:' . $db_path);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $stmt = $db->query('
-            SELECT player_name, score, ticker, played_at
+            SELECT id, player_name, score, ticker, played_at
             FROM scores
             ORDER BY score DESC, played_at ASC
             LIMIT 20
@@ -42,7 +43,7 @@ if (file_exists($db_path)) {
             </thead>
             <tbody>
                 <?php foreach ($scores as $i => $row): ?>
-                <tr class="<?= $i === 0 ? 'top' : '' ?>">
+                <tr class="<?= (int)$row['id'] === $score_id ? 'you' : '' ?>">
                     <td><?= $i + 1 ?></td>
                     <td><?= htmlspecialchars($row['player_name']) ?></td>
                     <td><?= htmlspecialchars($row['ticker'] ?? '—') ?></td>
