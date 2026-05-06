@@ -104,6 +104,11 @@ $page_title = "Jonathan Roman";
         <!-- <a style="text-decoration:none;" href="Files/Resume.html">Resume</a><br>
         <a style="text-decoration:none;" href="<?php echo $linkedin_url; ?>" target="_blank">LinkedIn</a><br>
         <a style="text-decoration:none;" href="<?php echo $goodreads_url; ?>" target="_blank">Goodreads</a><br> -->
+        <div style="margin-top: 12px;">
+            <a style="text-decoration:none;" href="tradegame/">Trade Game</a><br>
+            <a style="text-decoration:none;" href="unittracker/">Unit Tracker</a><br>
+            <a style="text-decoration:none;" href="healthtracker/">Health Tracker</a>
+        </div>
         <div class="photo-container">
             <img src="profile.jpg" alt="Profile photo" class="profile-photo">
         </div>
