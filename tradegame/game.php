@@ -167,8 +167,14 @@ const chart = LightweightCharts.createChart(document.getElementById('chart'), {
     height: 380,
     layout: { background: { color: '#0f0f17' }, textColor: '#a0a0b0' },
     grid:   { vertLines: { color: '#1e1e2e' }, horzLines: { color: '#1e1e2e' } },
-    timeScale: { timeVisible: true, secondsVisible: false, borderColor: '#2a2a3e' },
-    rightPriceScale: { borderColor: '#2a2a3e' },
+    timeScale: { timeVisible: true, secondsVisible: false, borderColor: '#2a2a3e', rightOffset: 5 },
+    rightPriceScale: { borderColor: '#2a2a3e', autoScale: true },
+    handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: true },
+    handleScale: {
+        mouseWheel: true,
+        pinch: true,
+        axisPressedMouseMove: { time: true, price: true },
+    },
 });
 
 const series = chart.addCandlestickSeries({
@@ -178,7 +184,8 @@ const series = chart.addCandlestickSeries({
 
 const c0 = CANDLES[0];
 series.setData([{ time: c0.ts, open: c0.open, high: c0.high, low: c0.low, close: c0.close }]);
-chart.timeScale().fitContent();
+// Show ~100 candles wide by default
+chart.timeScale().applyOptions({ barSpacing: Math.max(3, document.getElementById('chart').offsetWidth / 100) });
 
 window.addEventListener('resize', () => {
     chart.applyOptions({ width: document.getElementById('chart').offsetWidth });
